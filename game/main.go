@@ -2,7 +2,7 @@ package game
 
 import (
 	"net/http"
-	"reflect"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -13,7 +13,9 @@ var Upgrater = websocket.Upgrader{
 		return true
 	},
 }
-var AppControllerModule map[string]map[string]reflect.Value
+//var AppControllerModule map[string]map[string]reflect.Value
+
+var AppControllerModule sync.Map
 
 //func registerController(contro *interface{}) map[string]reflect.Value {
 //	cont := make(map[string]reflect.Value)
@@ -27,10 +29,12 @@ var AppControllerModule map[string]map[string]reflect.Value
 //	return cont
 //}
 
+var Sockets sync.Map //存储
+
 func Init() {
-	AppControllerModule = make(map[string]map[string]reflect.Value)
+	//AppControllerModule = make(map[string]map[string]reflect.Value)
 	wc := &Webcenter{"webcenter"}
-	AppControllerModule[wc.Name] = wc.RegisterController()
+	AppControllerModule.Store(wc.Name, wc.RegisterController())
 }
 
 //所有websocket的入口
