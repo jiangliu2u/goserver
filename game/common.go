@@ -1,11 +1,10 @@
 package game
 
-
 //客户端传来的数据
 type ClientMessage struct {
 	Name   string                 `json:"name"`
 	Data   map[string]interface{} `json:"data"`
-	Socket *WSSocket
+	Socket *wsConnection
 	Msg    interface{}
 }
 

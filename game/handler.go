@@ -4,9 +4,10 @@ import (
 	"c-server/util"
 	"encoding/json"
 	"fmt"
-	uuid "github.com/satori/go.uuid"
 	"reflect"
 	"strings"
+
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,6 +44,7 @@ func (cm *ClientMessage) Response(msg ResponseData) {
 	}
 	e = cm.Socket.socket.WriteMessage(1, raw)
 	if e != nil {
+		cm.Socket.WsClose()
 		fmt.Println("write message error: ", e)
 	}
 }
@@ -56,13 +58,16 @@ func WsHandler(c *gin.Context) {
 	uid := uuid.NewV4()
 	defer ws.Close()
 	defer Sockets.Delete(uid)
-	Sockets.Store(uid, *ws)
-	sock := WSSocket{ws}
+	Sockets.Store(uid, ws)
+	sock := &WSSocket{
+		socket:   ws,
+		isClosed: true,
+	}
+	go sock.HeartBeat()
 	sock.On("connection", func(i interface{}) {
 
 	})
 	sock.On("C_data", func(i interface{}) {
-		fmt.Println(Sockets)
 		req := i.(ClientMessage)
 		name, msg := req.getMsg() //name websocket/login
 		req.Msg = msg
@@ -83,7 +88,7 @@ func WsHandler(c *gin.Context) {
 			}
 		}
 		hehe, _ := AppControllerModule.Load(__moduleName) //比如webcenter.ts
-		if hehe==nil {
+		if hehe == nil {
 			fmt.Println("error no such module")
 			return
 		}
@@ -100,10 +105,10 @@ func WsHandler(c *gin.Context) {
 		//读取ws中的数据
 		_, message, err := sock.socket.ReadMessage()
 		if err != nil {
-			break
+			err = sock.socket.Close()
 		}
 		data := ClientMessage{}
-		data.Socket = &sock
+		data.Socket = sock
 		er := json.Unmarshal(message, &data)
 		if er != nil {
 			fmt.Println(err)
