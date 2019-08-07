@@ -1,6 +1,9 @@
 package game
 
 import (
+	"c-server/model"
+	"fmt"
+	uuid "github.com/satori/go.uuid"
 	"reflect"
 )
 
@@ -15,12 +18,34 @@ type WebcenterActions interface {
 }
 
 func (wb Webcenter) Login(req ClientMessage) {
-	//res := ResponseData{}
-	//res.Data= make(map[string]interface{})
-	//res.Put("uid", 1)
-	//res.Put("token", uuid.NewV4())
-	req.error("草拟吗啊")
-	//req.Response(res)
+	res := ResponseData{}
+	res.Data= make(map[string]interface{})
+	fmt.Println(req.Data)
+	loginfo := req.Data["msg"].(map[string] interface{})
+	email:=loginfo["email"]
+	password:=loginfo["password"]
+	var p model.Player
+	if err := model.DB.Where("email = ?", email).First(&p).Error; err != nil {
+		req.error("草拟吗啊,账户或密码错误")
+		return
+	}
+	if !p.CheckPassword(password.(string)){
+		req.error("草拟吗啊,账户或密码错误")
+		return
+	}
+	balance:=p.GetNeoBalance()
+	fmt.Println(balance)
+	res.Put("uid", p.Id)
+	res.Put("balance", balance)
+	jwt:=uuid.NewV4()
+	token := Token{token: jwt.String()}
+	token.saveToken(p.Id)
+	cake:=p.GetCoin("coin1")
+	res.Put("token", jwt.String())
+	res.Put("ethChargeAddress",p.NeoChargeAddress)
+	res.Put("cake",cake)
+
+	req.response(res)
 }
 func (wb Webcenter) Register(b interface{}) interface{} {
 	return nil
