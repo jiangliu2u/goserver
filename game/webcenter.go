@@ -1,7 +1,6 @@
 package game
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"reflect"
 )
 
@@ -16,11 +15,11 @@ type WebcenterActions interface {
 }
 
 func (wb Webcenter) Login(req ClientMessage) {
-	res := ResponseData{}
-	res.Data= make(map[string]interface{})
-	res.Put("uid", 1)
-	res.Put("token", uuid.NewV4())
-	req.Error("草拟吗啊",res)
+	//res := ResponseData{}
+	//res.Data= make(map[string]interface{})
+	//res.Put("uid", 1)
+	//res.Put("token", uuid.NewV4())
+	req.error("草拟吗啊")
 	//req.Response(res)
 }
 func (wb Webcenter) Register(b interface{}) interface{} {

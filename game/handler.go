@@ -23,7 +23,7 @@ func (cm ClientMessage) getMsg() (string, map[string]interface{}) {
 }
 
 //统一的响应客户端请求的方法 每个模块里的返回
-func (cm *ClientMessage) Response(msg ResponseData) {
+func (cm *ClientMessage) response(msg ResponseData) {
 	var res ResponseMessage
 	res.Name = "S_response"
 	tem := cm.Msg.(map[string]interface{})
@@ -42,12 +42,13 @@ func (cm *ClientMessage) Response(msg ResponseData) {
 }
 
 //统一的响应客户端请求的方法 每个模块里的返回
-func (cm *ClientMessage) Error(info string, msg ResponseData) {
+func (cm *ClientMessage) error(info string) {
+	msg := ResponseData{}
 	var res ResponseMessage
 	res.Name = "S_error"
 	tem := cm.Msg.(map[string]interface{})
 	msg.RequestID = tem["requestID"].(float64)
-	msg.Msg=info
+	msg.Msg = info
 	res.Data = msg
 	raw, e := json.Marshal(res)
 	if e != nil {
