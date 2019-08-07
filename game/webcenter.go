@@ -20,7 +20,8 @@ func (wb Webcenter) Login(req ClientMessage) {
 	res.Data= make(map[string]interface{})
 	res.Put("uid", 1)
 	res.Put("token", uuid.NewV4())
-	req.Response(res)
+	req.Error("草拟吗啊",res)
+	//req.Response(res)
 }
 func (wb Webcenter) Register(b interface{}) interface{} {
 	return nil
