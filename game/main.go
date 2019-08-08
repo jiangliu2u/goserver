@@ -27,12 +27,12 @@ func Init() {
 }
 
 //事件监听
-func (wsConn *wsConnection) Listen(event string, handler func(interface{})) {
+func (wsConn *wsConnection) Listen(event string, handler func(message ClientMessage)) {
 	wsEventHandlers[event] = handler
 }
 
 //事件分发
-func (wsConn *wsConnection) Dispatch(event string, data interface{}) {
+func (wsConn *wsConnection) Dispatch(event string, data ClientMessage) {
 	if len(event) == 0 {
 		return
 	}
@@ -54,8 +54,8 @@ func Handler(c *gin.Context) {
 	// 处理器
 	// go wsConn.procLoop()
 	// 读协程
-	wsConn.Listen("C_data", func(i interface{}) {
-		req := i.(ClientMessage)
+	wsConn.Listen("C_data", func(req ClientMessage) {
+		//req := i.(ClientMessage)
 		name, msg := req.getMsg() //name websocket/login
 		req.Msg = msg
 		head := strings.Split(name, "/")

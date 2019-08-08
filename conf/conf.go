@@ -14,9 +14,9 @@ func Init() {
 	godotenv.Load()
 
 	// 读取翻译文件
-	if err := LoadLocales("conf/locales/zh-cn.yaml"); err != nil {
-		panic(err)
-	}
+	//if err := LoadLocales("conf/locales/zh-cn.yaml"); err != nil {
+	//	panic(err)
+	//}
 
 	// 连接数据库
 	model.Database(os.Getenv("MYSQL_DSN"))

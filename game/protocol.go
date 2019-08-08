@@ -6,7 +6,7 @@ import (
 )
 
 var eventHandlers = make(map[string]func(interface{}))
-var wsEventHandlers = make(map[string]func(interface{}))
+var wsEventHandlers = make(map[string]func(message ClientMessage))
 
 // 客户端读写消息
 type wsMessage struct {
@@ -56,7 +56,7 @@ type ResponseMessage struct {
 type ResponseData struct {
 	Data      map[string]interface{} `json:"data"`
 	RequestID float64                `json:"requestID"`
-	Msg interface{} `json:"msg"`
+	Msg       interface{}            `json:"msg"`
 }
 
 //Put 往返回给客户端的数据里插入数据

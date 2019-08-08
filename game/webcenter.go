@@ -19,31 +19,35 @@ type WebcenterActions interface {
 
 func (wb Webcenter) Login(req ClientMessage) {
 	res := ResponseData{}
-	res.Data= make(map[string]interface{})
+	res.Data = make(map[string]interface{})
 	fmt.Println(req.Data)
-	loginfo := req.Data["msg"].(map[string] interface{})
-	email:=loginfo["email"]
-	password:=loginfo["password"]
+	loginfo, ok := req.Data["msg"].(map[string]interface{})
+	if !ok {
+		req.error("草拟吗啊,数据错误")
+		return
+	}
+	email := loginfo["email"]
+	password := loginfo["password"]
 	var p model.Player
 	if err := model.DB.Where("email = ?", email).First(&p).Error; err != nil {
 		req.error("草拟吗啊,账户或密码错误")
 		return
 	}
-	if !p.CheckPassword(password.(string)){
+	if !p.CheckPassword(password.(string)) {
 		req.error("草拟吗啊,账户或密码错误")
 		return
 	}
-	balance:=p.GetNeoBalance()
+	balance := p.GetNeoBalance()
 	fmt.Println(balance)
 	res.Put("uid", p.Id)
 	res.Put("balance", balance)
-	jwt:=uuid.NewV4()
+	jwt := uuid.NewV4()
 	token := Token{token: jwt.String()}
 	token.saveToken(p.Id)
-	cake:=p.GetCoin("coin1")
+	cake := p.GetCoin("coin1")
 	res.Put("token", jwt.String())
-	res.Put("ethChargeAddress",p.NeoChargeAddress)
-	res.Put("cake",cake)
+	res.Put("ethChargeAddress", p.NeoChargeAddress)
+	res.Put("cake", cake)
 
 	req.response(res)
 }
