@@ -23,7 +23,9 @@ var wsUpgrader = websocket.Upgrader{
 func Init() {
 	//AppControllerModule = make(map[string]map[string]reflect.Value)
 	wc := &Webcenter{"webcenter"}
+	wb := &Wcenter{"wcenter"}
 	AppControllerModule.Store(wc.Name, wc.RegisterController())
+	AppControllerModule.Store(wb.Name, wb.RegisterController())
 }
 
 //事件监听

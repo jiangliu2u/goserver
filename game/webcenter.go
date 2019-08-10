@@ -20,7 +20,6 @@ type WebcenterActions interface {
 func (wb Webcenter) Login(req ClientMessage) {
 	res := ResponseData{}
 	res.Data = make(map[string]interface{})
-	fmt.Println(req.Data)
 	loginfo, ok := req.Data["msg"].(map[string]interface{})
 	if !ok {
 		req.error("草拟吗啊,数据错误")
