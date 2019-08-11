@@ -38,7 +38,7 @@ type Player struct {
 }
 
 // GetUser 用ID获取用户
-func GetPlayer(ID interface{}) (Player, error) {
+func GetPlayerById(ID interface{}) (Player, error) {
 	var player Player
 	result := DB.First(&player, ID)
 	return player, result.Error
@@ -61,7 +61,7 @@ func (p Player) GetNeoBalance() (balance string) {
 	return n
 }
 func (p Player) GetCoin(coinName string) (coin string) {
-	KEY := `player:` + strconv.Itoa(int(p.Id)) +":"+ coinName
+	KEY := `player:` + strconv.Itoa(int(p.Id)) + ":" + coinName
 	n, err := cache.RedisClient.Get(KEY).Result()
 	if err != nil {
 		return "0"
