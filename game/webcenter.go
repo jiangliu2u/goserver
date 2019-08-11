@@ -2,7 +2,6 @@ package game
 
 import (
 	"c-server/model"
-	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"reflect"
 )
@@ -19,27 +18,53 @@ type WebcenterActions interface {
 
 func (wb Webcenter) Login(req ClientMessage) {
 	res := ResponseData{}
+
 	res.Data = make(map[string]interface{})
 	loginfo, ok := req.Data["msg"].(map[string]interface{})
 	if !ok {
 		req.error("草拟吗啊,数据错误")
 		return
 	}
-	email := loginfo["email"]
-	password := loginfo["password"]
 	var p model.Player
-	if err := model.DB.Where("email = ?", email).First(&p).Error; err != nil {
-		req.error("草拟吗啊,账户或密码错误")
-		return
+
+	if loginfo["type"] == "cm" {
+		loginData := loginfo["data"].(map[string]interface{})
+		accountType := loginData["accountType"]
+		password := loginData["password"]
+		if accountType == "email" {
+			if err := model.DB.Where("email = ?", loginData["email"]).First(&p).Error; err != nil {
+				req.error("草拟吗啊,账户或密码错误")
+				return
+			}
+			if !p.CheckPassword(password.(string)) {
+				req.error("草拟吗啊,账户或密码错误")
+				return
+			}
+		} else {
+			if err := model.DB.Where("phone = ?", loginData["phone"]).First(&p).Error; err != nil {
+				req.error("草拟吗啊,账户或密码错误")
+				return
+			}
+			if !p.CheckPassword(password.(string)) {
+				req.error("草拟吗啊,账户或密码错误")
+				return
+			}
+		}
+	} else {
+		email := loginfo["email"]
+		password := loginfo["password"]
+		if err := model.DB.Where("email = ?", email).First(&p).Error; err != nil {
+			req.error("草拟吗啊,账户或密码错误")
+			return
+		}
+		if !p.CheckPassword(password.(string)) {
+			req.error("草拟吗啊,账户或密码错误")
+			return
+		}
 	}
-	if !p.CheckPassword(password.(string)) {
-		req.error("草拟吗啊,账户或密码错误")
-		return
-	}
-	balance := p.GetNeoBalance()
-	fmt.Println(balance)
+	b := p.GetNeoBalance()
 	res.Put("uid", p.Id)
-	res.Put("balance", balance)
+	res.Put("balance", b)
 	jwt := uuid.NewV4()
 	token := Token{token: jwt.String()}
 	token.saveToken(p.Id)

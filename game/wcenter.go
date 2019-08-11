@@ -1,7 +1,7 @@
 package game
 
 import (
-	"c-server/blockchain/ethereum"
+	"c-server/blockchain/eth"
 	"c-server/cache"
 	"c-server/model"
 	"context"
@@ -57,13 +57,13 @@ func (wb Wcenter) Info(req ClientMessage) {
 		verified = "0"
 	}
 	account := common.HexToAddress("0x87c5985dBc32650F20E275453DddE97e5D44eC82")
-	balance, err := ethereum.EthClient.BalanceAt(context.Background(), account, nil)
+	balance, err := eth.Client.BalanceAt(context.Background(), account, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println(balance) // 25893180161173005034
-	res.Put("balance", verified)
+	res.Put("verified", verified)
 	req.response(res)
 }
 func (wb Wcenter) ChargeAndWithdraw(req ClientMessage) {
