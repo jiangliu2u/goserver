@@ -34,3 +34,16 @@ func HasFunc(data map[string]reflect.Value, key string) bool {
 		return false
 	}
 }
+
+// 按照 Int64Slice 从大到小排序
+type Int64Slice [] int64
+
+func (a Int64Slice) Len() int {    	 // 重写 Len() 方法
+	return len(a)
+}
+func (a Int64Slice) Swap(i, j int){     // 重写 Swap() 方法
+	a[i], a[j] = a[j], a[i]
+}
+func (a Int64Slice) Less(i, j int) bool {    // 重写 Less() 方法， 从大到小排序
+	return a[j] < a[i]
+}
