@@ -5,7 +5,7 @@ import (
 	"c-server/conf"
 	"c-server/game"
 	"c-server/server"
-	"math/big"
+	"sync"
 )
 
 func main() {
@@ -13,12 +13,12 @@ func main() {
 	conf.Init()
 	eth.Init()
 	game.Init()
-	eth.Blo = make(chan *big.Int, 100000)
-	eth.Save = make(chan *big.Int, 100000)
 	//go eth.WriteToRedis()
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
 	//go eth.SyncBlock()
-	go eth.SyncTx()
-	go eth.StartSync()
+	go eth.StartSync(wg)
+	wg.Wait()
 
 	// 装载路由
 	r := server.NewRouter()
