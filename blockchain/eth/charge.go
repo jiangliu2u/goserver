@@ -5,11 +5,12 @@ import (
 	"c-server/model"
 	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 const CONFIRM_NUMBER = 1
@@ -83,7 +84,6 @@ func StartSync(ws *sync.WaitGroup) {
 			continue
 		}
 		if bln.Cmp(blockNumber) == 0 || bln.Cmp(blockNumber) == -1 {
-			fmt.Println("无新区块..")
 			continue
 		}
 		var add int64 = 1
@@ -116,9 +116,10 @@ func GetTx(i *big.Int) {
 
 	go func() {
 		txes := GetTransaction(i)
-		fmt.Println(txes)
 		for _, tx := range txes {
 			to := tx.To()
+			hash := fmt.Sprintf("%x", tx.Hash())
+			fmt.Println(hash)
 			if to == nil {
 				continue
 			}

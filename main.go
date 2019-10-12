@@ -13,10 +13,8 @@ func main() {
 	conf.Init()
 	eth.Init()
 	game.Init()
-	//go eth.WriteToRedis()
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
-	//go eth.SyncBlock()
 	go eth.StartSync(wg)
 	wg.Wait()
 
