@@ -37,7 +37,23 @@ func (cm *ClientMessage) response(msg ResponseData) {
 	e = cm.Socket.wsWrite(1, raw)
 	if e != nil {
 		fmt.Println(e)
+	}
+}
+
+//PushMessage 主动推送消息
+func (cm *WsConnection) PushMessage(name string, data interface{}) {
+	var res ResponseMessage
+	res.Name = name
+	res.Data = data
+	raw, e := json.Marshal(res)
+	if e != nil {
+		fmt.Println(e)
 		return
+	}
+	e = cm.wsWrite(1, raw)
+	if e != nil {
+		fmt.Println("推送消息失败")
+		fmt.Println(e)
 	}
 }
 

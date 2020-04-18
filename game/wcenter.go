@@ -1,13 +1,9 @@
 package game
 
 import (
-	"c-server/blockchain/eth"
 	"c-server/cache"
 	"c-server/model"
-	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"log"
 	"reflect"
 	"strconv"
 )
@@ -23,7 +19,7 @@ type Wcenter struct {
 //	Register(interface{}) interface{}
 //}
 
-func (wb Wcenter) Info(req ClientMessage) {
+func (wb Wcenter) Plant(req ClientMessage) {
 	res := ResponseData{}
 	res.Data = make(map[string]interface{})
 	loginfo, ok := req.Data["msg"].(map[string]interface{})
@@ -56,16 +52,11 @@ func (wb Wcenter) Info(req ClientMessage) {
 	if err != nil {
 		verified = "0"
 	}
-	account := common.HexToAddress("0x87c5985dBc32650F20E275453DddE97e5D44eC82")
-	balance, err := eth.Client.BalanceAt(context.Background(), account, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	fmt.Println(balance) // 25893180161173005034
 	res.Put("verified", verified)
 	req.response(res)
 }
+
 func (wb Wcenter) ChargeAndWithdraw(req ClientMessage) {
 	res := ResponseData{}
 	res.Data = make(map[string]interface{})

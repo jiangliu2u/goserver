@@ -2,8 +2,10 @@ package game
 
 import (
 	"c-server/model"
-	uuid "github.com/satori/go.uuid"
+	"fmt"
 	"reflect"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 //用户中心
@@ -18,7 +20,7 @@ type WebcenterActions interface {
 
 func (wb Webcenter) Login(req ClientMessage) {
 	res := ResponseData{}
-
+	fmt.Println("loging ..............")
 	res.Data = make(map[string]interface{})
 	loginfo, ok := req.Data["msg"].(map[string]interface{})
 	if !ok {
@@ -54,6 +56,7 @@ func (wb Webcenter) Login(req ClientMessage) {
 		email := loginfo["email"]
 		password := loginfo["password"]
 		if err := model.DB.Where("email = ?", email).First(&p).Error; err != nil {
+			fmt.Println(err)
 			req.error("草拟吗啊,账户或密码错误")
 			return
 		}
@@ -79,7 +82,7 @@ func (wb Webcenter) Register(b interface{}) interface{} {
 	return nil
 }
 
-func (wb *Webcenter) RegisterController() map[string]reflect.Value {
+func RegisterController(wb interface{}) map[string]reflect.Value {
 	cont := make(map[string]reflect.Value)
 	v := reflect.ValueOf(wb).Elem()
 	t := reflect.TypeOf(wb).Elem()
